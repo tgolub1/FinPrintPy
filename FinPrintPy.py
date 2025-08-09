@@ -12,6 +12,7 @@ class PrjRecordList:
         self.maxusd = 0
         self.maxact = 0
         self.numelem = 0
+        self.maxlen = 142
         self.RipFile()
 
     def RipFile(self):
@@ -32,15 +33,24 @@ class PrjRecordList:
         print(strafrag1, end='')
         print(' ' * (13 - len(strafrag1)), end='|')
         if (budget >= actual):
-            print('=' * 140, end='|\n')
+            print('=' * self.maxlen, end='| ') # 100% len for available budget
         else:
-            print('.' * 140, end='|\n')
+            print('.' * self.maxlen, end='| ') # 100% len for given actual
+        print(val)
+
         print(strafrag2, end='')
         print(' ' * (13 - len(strafrag2)), end='|')
         if (budget >= actual):
-            print('=' * 140, end='| ')
+            # calculate % ratio based on the value
+            if (budget != 0):
+                actlen = round(((actual / budget) * self.maxlen))
+                print('.' * int(actlen), round((actual / budget) * 100), end='')
+            else:
+                actlen = 0
+                print(" 0", end='')
+            print('%')
         else:
-            print('.' * 140, end='| ')
+            print('=' * self.maxlen, end='| ')
         print()
 
 recList = PrjRecordList(df)
