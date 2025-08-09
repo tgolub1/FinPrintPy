@@ -1,10 +1,8 @@
 # FinPlot.py -- plot nested bar graphs showing project utilisation
-import plotly.express as px
 import pandas as pd
 
 # Open Data File
 df = pd.read_csv("C:/C-Drive/GRST-TTS37-PRJ_YY_DATA_summary_FITID_YEAR2.csv")
-# print(df.iloc[0]) # output the first record to terminal
 
 class PrjRecordList:
     def __init__(self, df):
@@ -12,7 +10,7 @@ class PrjRecordList:
         self.maxusd = 0
         self.maxact = 0
         self.numelem = 0
-        self.maxlen = 142
+        self.maxlen = 144
         self.RipFile()
 
     def RipFile(self):
@@ -32,8 +30,13 @@ class PrjRecordList:
         strafrag2 = "[{}][{}]".format("$ACT", actual)
         print(strafrag1, end='') # line 2
         print(' ' * (13 - len(strafrag1)), end='|')
+
         if (budget >= actual):
-            print('=' * self.maxlen, end='| ') # 100% len for available budget
+            # divide the budget line into pre and post YTD - print preYTD red and postYTD green
+            preYTDmult = int((self.maxlen / 12) * month)
+            postYTDmult = int((self.maxlen / 12) * (12 - month))
+            print('\033[34m=' * preYTDmult, end='\033[0m')
+            print('\033[31m=' * postYTDmult, end='\033[0m| ')
             print(val)
 
             print(strafrag2, end='') # line 3
@@ -42,20 +45,34 @@ class PrjRecordList:
             # calculate % ratio based on the value
             if (budget != 0):
                 actlen = round(((actual / budget) * self.maxlen))
-                print('.' * int(actlen), round((actual / budget) * 100), end='')
+                sign = '?'
+                delta = int(self.df["DELTA"][i][:-1].replace(",", ""))
+                if (delta >= 100):
+                    delta = delta - 100
+                    sign = '+'
+                elif (delta < 100) and (delta > 0):
+                    delta = 100 - delta
+                    sign = '-'
+                elif (delta == 0):
+                    sign = ''
+                print("{} [{}%][{}{}]".format(('-' * int(actlen)), (round((actual / budget) * 100)), sign, delta))
             else:
                 actlen = 0
-                print(" 0", end='')
-            print('%')
+                print(" [0%]")
         else: # budget < actual
             if (actual != 0):
                 budlen = round(((budget / actual) * self.maxlen))
-                print('=' * int(budlen), end='| ') # line 1
+                # divide the budget line into pre and post YTD - print preYTD red and postYTD green
+                preYTDmult = int((budlen / 12) * month)
+                postYTDmult = int((budlen / 12) * (12 - month))
+                print('\033[34m=' * preYTDmult, end='\033[0m')
+                print('\033[31m=' * postYTDmult, end='\033[0m| ')
+                #print('\033[31m=' * int(budlen), end='\033[0m| ') # line 1
                 print(val)
 
                 print(strafrag2, end='')  # line 3
                 print(' ' * (13 - len(strafrag2)), end='|')
-                print('.' * self.maxlen, end=' ')
+                print('-' * self.maxlen, end=' ')
                 if (budget != 0):
                     print(round((actual / budget) * 100), end = '')
                 else:
