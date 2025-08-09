@@ -27,20 +27,18 @@ class PrjRecordList:
     def PlotBar(self, val, act, month, i):
         budget = int(int(val[1:].replace(",", "")))
         actual = int(int(act[1:].replace(",", "")))
-        print("[FIT-{}][{}] {}".format(self.df["FITID"][i],self.df["FITID_DDCID"][i],self.df["FITID_PRJNAME"][i]))
+        print("[FIT-{}][{}] {}".format(self.df["FITID"][i],self.df["FITID_DDCID"][i],self.df["FITID_PRJNAME"][i])) # line 1
         strafrag1 = "[{}][{}]".format("$BUD", budget)
         strafrag2 = "[{}][{}]".format("$ACT", actual)
-        print(strafrag1, end='')
+        print(strafrag1, end='') # line 2
         print(' ' * (13 - len(strafrag1)), end='|')
         if (budget >= actual):
             print('=' * self.maxlen, end='| ') # 100% len for available budget
-        else:
-            print('.' * self.maxlen, end='| ') # 100% len for given actual
-        print(val)
+            print(val)
 
-        print(strafrag2, end='')
-        print(' ' * (13 - len(strafrag2)), end='|')
-        if (budget >= actual):
+            print(strafrag2, end='') # line 3
+            print(' ' * (13 - len(strafrag2)), end='|')
+
             # calculate % ratio based on the value
             if (budget != 0):
                 actlen = round(((actual / budget) * self.maxlen))
@@ -49,8 +47,23 @@ class PrjRecordList:
                 actlen = 0
                 print(" 0", end='')
             print('%')
-        else:
-            print('=' * self.maxlen, end='| ')
+        else: # budget < actual
+            if (actual != 0):
+                budlen = round(((budget / actual) * self.maxlen))
+                print('=' * int(budlen), end='| ') # line 1
+                print(val)
+
+                print(strafrag2, end='')  # line 3
+                print(' ' * (13 - len(strafrag2)), end='|')
+                print('.' * self.maxlen, end=' ')
+                if (budget != 0):
+                    print(round((actual / budget) * 100), end = '')
+                else:
+                    print('0', end='')
+            else:
+                budlen = 0
+                print(" 0", end='')
+            print('%')
         print()
 
 recList = PrjRecordList(df)
