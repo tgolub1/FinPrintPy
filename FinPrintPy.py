@@ -10,7 +10,7 @@ class PrjRecordList:
         self.maxusd = 0
         self.maxact = 0
         self.numelem = 0
-        self.maxlen = 144
+        self.maxlen = 120
         self.RipFile()
 
     def RipFile(self):
@@ -57,9 +57,9 @@ class PrjRecordList:
                     sign = ''
 
                 if (actlen > 0):
-                    print("{} [{}%][{}{}]".format((('-' * actlen) + 'o'), (round((actual / budget) * 100)), sign, delta))
+                    print("\033[32m{}\033[0m [{}%][{}{}]".format((('-' * actlen) + 'o'), (round((actual / budget) * 100)), sign, delta))
                 else:
-                    print("{} [{}%][{}{}]".format(('-' * actlen), (round((actual / budget) * 100)), sign, delta))
+                    print("\033[32m{}\033[0m [{}%][{}{}]".format(('-' * actlen), (round((actual / budget) * 100)), sign, delta))
             else: # budget is 0
                 print(" $0")
                 print(strafrag2, end='')  # line 3
@@ -81,14 +81,14 @@ class PrjRecordList:
 
                     print(strafrag2, end='')  # line 3
                     print(' ' * (13 - len(strafrag2)), end='|')
-                    print(('-' * (self.maxlen - 1) + 'o'), end=' ')
+                    print(('\033[32m-' * (self.maxlen - 1) + 'o'), end='\033[0m ')
 
                     print("{}%".format(round((actual / budget) * 100)))
                 else: # budget is 0
                     print(' $0')
                     print(strafrag2, end='')  # line 3
                     print(' ' * (13 - len(strafrag2)), end='|')
-                    print("{} ${}".format(('-' * self.maxlen) + 'o', actual))
+                    print("\033[32m{}\033[0m ${}".format(('-' * self.maxlen) + 'o', actual))
             else: # actual is 0
                 print(" 0%")
         print()
@@ -96,5 +96,6 @@ class PrjRecordList:
 # MAIN PROGRAM SECTION
 recList = PrjRecordList(df)
 
+print() # generate initial space at the top of the printout
 for i, row in recList.df.iterrows():
     recList.PlotBar(recList.df["CB$SUM"][i].strip(),recList.df["ACT"][i].strip(),7, i)
