@@ -43,8 +43,13 @@ class PrjRecordList:
             print(' ' * (13 - len(strafrag2)), end='|')
 
             # calculate % ratio based on the value
-            if (budget != 0):
-                actlen = round(((actual / budget) * self.maxlen))
+            if (budget > 0):
+                actlen = int(round(((actual / budget) * self.maxlen)))
+                actlen1 = actlen
+                if (actlen > 0):
+                    actlen1 = actlen
+                elif (actlen < 1):
+                    actlen1 = 0
                 sign = '?'
                 delta = int(self.df["DELTA"][i][:-1].replace(",", ""))
                 if (delta >= 100):
@@ -55,32 +60,36 @@ class PrjRecordList:
                     sign = '-'
                 elif (delta == 0):
                     sign = ''
-                print("{} [{}%][{}{}]".format(('-' * int(actlen)), (round((actual / budget) * 100)), sign, delta))
-            else:
-                actlen = 0
-                print(" [0%]")
-        else: # budget < actual
-            if (actual != 0):
-                budlen = round(((budget / actual) * self.maxlen))
-                # divide the budget line into pre and post YTD - print preYTD red and postYTD green
-                preYTDmult = int((budlen / 12) * month)
-                postYTDmult = int((budlen / 12) * (12 - month))
-                print('\033[34m=' * preYTDmult, end='\033[0m')
-                print('\033[31m=' * postYTDmult, end='\033[0m| ')
-                #print('\033[31m=' * int(budlen), end='\033[0m| ') # line 1
-                print(val)
 
-                print(strafrag2, end='')  # line 3
-                print(' ' * (13 - len(strafrag2)), end='|')
-                print('-' * self.maxlen, end=' ')
-                if (budget != 0):
-                    print(round((actual / budget) * 100), end = '')
+                if (actlen > 0):
+                    print("{} [{}%][{}{}]".format((('-' * actlen1) + 'o'), (round((actual / budget) * 100)), sign, delta))
                 else:
-                    print('0', end='')
-            else:
+                    print("{} [{}%][{}{}]".format(('-' * actlen1), (round((actual / budget) * 100)), sign, delta))
+            else: # budget is 0
+                actlen = 0
+                print(" [0%][0]")
+        else: # budget < actual
+            if (actual > 0):
+                if (budget > 0):
+                    budlen = round(((budget / actual) * self.maxlen))
+                    # divide the budget line into pre and post YTD - print preYTD red and postYTD green
+                    preYTDmult = int((budlen / 12) * month)
+                    postYTDmult = int((budlen / 12) * (12 - month))
+                    print('\033[34m=' * preYTDmult, end='\033[0m')
+                    print('\033[31m=' * postYTDmult, end='\033[0m| ')
+                    print(val)
+
+                    print(strafrag2, end='')  # line 3
+                    print(' ' * (13 - len(strafrag2)), end='|')
+                    print(('-' * (self.maxlen - 1) + 'o'), end=' ')
+
+                    print("{}%".format(round((actual / budget) * 100)))
+                else: # budget is 0
+                    print(' $0')
+                    print('[$ACT][0]    | 0%')
+            else: # actual is 0
                 budlen = 0
-                print(" 0", end='')
-            print('%')
+                print(" 0%")
         print()
 
 recList = PrjRecordList(df)
