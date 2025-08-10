@@ -97,5 +97,4 @@ class PrjRecordList:
 recList = PrjRecordList(df)
 
 for i, row in recList.df.iterrows():
-    print("[{}][{}]".format(recList.df["CB$SUM"][i].strip(),recList.df["ACT"][i].strip()))
     recList.PlotBar(recList.df["CB$SUM"][i].strip(),recList.df["ACT"][i].strip(),7, i)
